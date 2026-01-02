@@ -1,0 +1,1251 @@
+{
+  "nodes": [
+    {
+      "parameters": {
+        "jsCode": "// If you need to process multiple paths\nfor (const item of items) {\n  const path = $input.first().json.path;\n  const filename = path ? path.split(/[\\/\\\\]/).pop() : '';\n  item.json.filename = filename;\n}\nreturn items;"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -6144,
+        -224
+      ],
+      "id": "035bae09-4b53-477c-ad0c-b1094b6eadba",
+      "name": "Code in JavaScript"
+    },
+    {
+      "parameters": {
+        "triggerOn": "folder",
+        "path": "/home/node/gtasa/",
+        "events": [
+          "add"
+        ],
+        "options": {
+          "awaitWriteFinish": true
+        }
+      },
+      "type": "n8n-nodes-base.localFileTrigger",
+      "typeVersion": 1,
+      "position": [
+        -6368,
+        -224
+      ],
+      "id": "6b239658-a390-4c9e-b974-161898550935",
+      "name": "Local File Trigger"
+    },
+    {
+      "parameters": {
+        "fileSelector": "=/home/node/{{ $('GAME').item.json.first3Capitalized }} {{ $('GAME NAME').item.json.extractedText }} {{ $('GAME Version').item.json.extractedText }} {{ $('Video TYPE').item.json.lowercaseWords[0] }} {{ $('Video Item').item.json.extractedText }}.mp4",
+        "options": {
+          "mimeType": "video/mp4"
+        }
+      },
+      "type": "n8n-nodes-base.readWriteFile",
+      "typeVersion": 1,
+      "position": [
+        1600,
+        -128
+      ],
+      "id": "6880494d-104c-4029-9570-489913605a63",
+      "name": "Read/Write Files from Disk1",
+      "alwaysOutputData": true
+    },
+    {
+      "parameters": {
+        "postSettings": {
+          "text": "={{ $('GAME').item.json.first3Capitalized }} {{ $('GAME NAME').item.json.extractedText }} {{ $('GAME Version').item.json.extractedText }} {{ $('Video TYPE').item.json.lowercaseWords[0] }} {{ $('Video Item').item.json.extractedText }}\n\n{{ $('Basic LLM Chain').item.json.text }}",
+          "visibilityType": 0,
+          "allowComment": 1,
+          "scheduleTime": 0
+        }
+      },
+      "type": "n8n-nodes-social-tiktok.tikTokUpload",
+      "typeVersion": 1,
+      "position": [
+        1824,
+        -128
+      ],
+      "id": "e35b0723-9cef-48f6-9389-5feac7b7d99a",
+      "name": "TikTok Upload",
+      "credentials": {
+        "tiktokApi": {
+          "id": "nDgL6Ha8rKtmSi6s",
+          "name": "UnrealG"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "// Get first input item\nconst item = $input.first();\nconst original = $('Code in JavaScript').first().json.filename || $('Code in JavaScript').first().json.path || item.json.string || \"\";\n\nif (!original) {\n  return [{\n    json: {\n      ...item.json,\n      error: \"No filename found\"\n    }\n  }];\n}\n\n// Remove .mp4 from the end (case-insensitive)\nlet cleaned = original.toString().replace(/\\.mp4$/i, '');\n\n// Replace all underscores with spaces\ncleaned = cleaned.replace(/_/g, '_');\n\n// Return single processed item\nreturn [{\n  json: {\n    ...item.json,\n    cleaned: cleaned,\n    original: original\n  }\n}];"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -5920,
+        -224
+      ],
+      "id": "58ad303f-4833-45e4-a7e2-289875fd4bb2",
+      "name": "Code in JavaScript1"
+    },
+    {
+      "parameters": {
+        "fileSelector": "=/home/node/{{ $('GAME').item.json.first3Capitalized }} {{ $('GAME NAME').item.json.extractedText }} {{ $('GAME Version').item.json.extractedText }} {{ $('Video TYPE').item.json.lowercaseWords[0] }} {{ $('Video Item').item.json.extractedText }}.mp4",
+        "options": {
+          "mimeType": "video/mp4"
+        }
+      },
+      "type": "n8n-nodes-base.readWriteFile",
+      "typeVersion": 1,
+      "position": [
+        256,
+        -128
+      ],
+      "id": "c1dd0d43-4422-407b-b586-b4a0e1c96add",
+      "name": "Read/Write Files from Disk",
+      "alwaysOutputData": true
+    },
+    {
+      "parameters": {
+        "resource": "video",
+        "operation": "upload",
+        "title": "={{ $('GAME').item.json.first3Capitalized }} {{ $('GAME NAME').item.json.extractedText }} {{ $('GAME Version').item.json.extractedText }} {{ $('Video TYPE').item.json.lowercaseWords[0] }} {{ $('Video Item').item.json.extractedText }}",
+        "regionCode": "ZA",
+        "categoryId": "20",
+        "options": {
+          "defaultLanguage": "en",
+          "description": "={{ $('Basic LLM Chain').item.json.text }}",
+          "embeddable": true,
+          "license": "creativeCommon",
+          "privacyStatus": "public",
+          "publicStatsViewable": false,
+          "recordingDate": "={{ $now }}",
+          "selfDeclaredMadeForKids": false,
+          "tags": "={{ $('Code in JavaScript2').item.json.tagString }}, {{ $('GAME').item.json.first3Capitalized }}, {{ $('GAME NAME').item.json.extractedText }}, {{ $('GAME Version').item.json.extractedText }}, {{ $('Video TYPE').item.json.lowercaseWords[0] }}, {{ $('Video Item').item.json.extractedText }}"
+        }
+      },
+      "type": "n8n-nodes-base.youTube",
+      "typeVersion": 1,
+      "position": [
+        480,
+        -128
+      ],
+      "id": "eb00b90e-91dd-4762-91cb-73a86469af98",
+      "name": "Upload a video",
+      "credentials": {
+        "youTubeOAuth2Api": {
+          "id": "gzZdf4HRsBCVgwSY",
+          "name": "Real Local Testing Supz"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "fileSelector": "={{ $('Code in JavaScript').item.json.path }}",
+        "options": {
+          "mimeType": "video/mp4"
+        }
+      },
+      "type": "n8n-nodes-base.readWriteFile",
+      "typeVersion": 1,
+      "position": [
+        -2432,
+        -224
+      ],
+      "id": "55733cdd-e28c-4aaa-b831-f6ec4eb8ccbc",
+      "name": "Read/Write Files from Disk2"
+    },
+    {
+      "parameters": {
+        "resource": "video",
+        "operation": "upload",
+        "title": "={{ $('GAME').item.json.first3Capitalized }} {{ $('GAME NAME').item.json.extractedText }} {{ $('GAME Version').item.json.extractedText }} {{ $('Video TYPE').item.json.lowercaseWords[0] }} {{ $('Video Item').item.json.extractedText }}",
+        "regionCode": "ZA",
+        "categoryId": "20",
+        "options": {
+          "defaultLanguage": "en",
+          "description": "={{ $('Code in JavaScript3').item.json.result }}",
+          "embeddable": true,
+          "license": "creativeCommon",
+          "privacyStatus": "unlisted",
+          "publicStatsViewable": false,
+          "recordingDate": "={{ $now }}",
+          "selfDeclaredMadeForKids": false,
+          "tags": "={{ $('Code in JavaScript2').item.json.tagString }}, {{ $('GAME').item.json.first3Capitalized }}, {{ $('GAME NAME').item.json.extractedText }}, {{ $('GAME Version').item.json.extractedText }}, {{ $('Video TYPE').item.json.lowercaseWords[0] }}, {{ $('Video Item').item.json.extractedText }}"
+        }
+      },
+      "type": "n8n-nodes-base.youTube",
+      "typeVersion": 1,
+      "position": [
+        -2208,
+        -224
+      ],
+      "id": "052b14a0-b6f8-4b22-a594-1e7e17f6d1d1",
+      "name": "Upload a video1",
+      "credentials": {
+        "youTubeOAuth2Api": {
+          "id": "gzZdf4HRsBCVgwSY",
+          "name": "Real Local Testing Supz"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "const allTags = [\n \"coupe\", \"convertible\", \"SUV\", \"truck\", \"pickup\", \"van\", \"motorcycle\", \"bike\", \"bicycle\", \"boat\", \"plane\", \"helicopter\", \"tank\", \"emergency vehicle\", \"police car\", \"fire truck\", \"ambulance\", \"taxi\", \"bus\", \"tractor\", \"combine\", \"monster truck\", \"dune buggy\", \"go kart\", \"RC vehicle\", \"hovercraft\", \"jetpack\", \"nitrous\", \"hydraulics\", \"body kits\", \"spoilers\", \"bumpers\", \"side skirts\", \"roof scoops\", \"exhaust\", \"wheels\", \"rims\", \"paint jobs\", \"colors\", \"vinyls\", \"car modification\", \"car customization\", \"tuning\", \"import cars\", \"export cars\", \"car theft\", \"vehicle damage\", \"car physics\", \"handling\", \"speed\", \"acceleration\", \"braking\", \"top speed\", \"durability\", \"mass\", \"gang cars\", \"vehicle missions\", \"courier missions\", \"trucking missions\", \"taxi missions\", \"ambulance missions\", \"firefighter missions\", \"police missions\", \"race tournaments\", \"street races\", \"off-road racing\", \"stadium events\", \"car dealerships\", \"rare vehicles\", \"hidden vehicles\", \"unique vehicles\", \"bulletproof vehicles\", \"fireproof vehicles\", \"explosive vehicles\", \"two-player vehicles\", \"amphibious vehicles\", \"flying vehicles\", \"land vehicles\", \"water vehicles\", \"air vehicles\", \"civilian vehicles\", \"industrial vehicles\", \"service vehicles\", \"public service vehicles\", \"military vehicles\", \"emergency services\", \"law enforcement\", \"gang vehicles\", \"unique colors\", \"special modifications\", \"performance upgrades\", \"visual upgrades\", \"engine\", \"transmission\", \"suspension\", \"brakes\", \"tires\", \"armor\", \"weight reduction\", \"acceleration boost\", \"handling improvements\", \"drift\", \"burnout\", \"wheelie\", \"stoppie\", \"bunny hop\", \"car chase\", \"vehicle pursuit\", \"getaway car\", \"drive-by\", \"car jacking\", \"vehicle spawning\", \"parked cars\", \"traffic\", \"pedestrian vehicles\", \"mission vehicles\", \"scripted vehicles\", \"garage storage\", \"safe house parking\", \"impound lot\", \"pay n spray\", \"respray\", \"vehicle repair\", \"damage system\", \"scratches\", \"dents\", \"broken windows\", \"flat tires\", \"engine fire\", \"smoking engine\", \"vehicle explosion\", \"vehicle destruction\", \"wreckage\", \"abandoned vehicles\", \"rusty cars\", \"beach vehicles\", \"countryside vehicles\", \"city vehicles\", \"desert vehicles\", \"mountain vehicles\", \"highway vehicles\", \"backroad vehicles\", \"off-road capable\", \"four-wheel drive\", \"rear-wheel drive\", \"front-wheel drive\", \"all-wheel drive\", \"manual transmission\", \"automatic transmission\", \"turbocharged\", \"supercharged\", \"naturally aspirated\", \"V8 engine\", \"V6 engine\", \"four cylinder\", \"high performance\", \"low performance\", \"daily driver\", \"weekend car\", \"show car\", \"drag racer\", \"circuit racer\", \"rally car\", \"drift car\", \"stance\", \"slammed\", \"lifted\", \"bagged\", \"air suspension\", \"coilovers\", \"camber\", \"toe\", \"caster\", \"alignment\", \"track width\", \"wheelbase\", \"ground clearance\", \"ride height\", \"weight distribution\", \"power to weight ratio\", \"torque\", \"horsepower\", \"RPM\", \"redline\", \"fuel consumption\", \"fuel tank\", \"passenger capacity\", \"cargo space\", \"trunk space\", \"door count\", \"convertible top\", \"hardtop\", \"sunroof\", \"tinted windows\", \"bulletproof glass\", \"reinforced chassis\", \"roll cage\", \"racing seats\", \"racing harness\", \"steering wheel\", \"dashboard\", \"speedometer\", \"tachometer\", \"odometer\", \"fuel gauge\", \"temperature gauge\", \"GPS\", \"radio\", \"car stereo\", \"bass\", \"speakers\", \"amplifier\", \"subwoofer\", \"underglow\", \"neon lights\", \"headlights\", \"taillights\", \"brake lights\", \"turn signals\", \"hazard lights\", \"fog lights\", \"high beams\", \"license plate\", \"hood ornament\", \"antenna\", \"mirrors\", \"door handles\", \"gas cap\", \"badges\", \"emblems\", \"decals\", \"pinstripes\", \"flames\", \"tribal designs\", \"racing stripes\", \"carbon fiber\", \"chrome\", \"matte finish\", \"metallic paint\", \"pearl paint\", \"candy paint\", \"chameleon paint\", \"wrap\", \"rust\", \"primer\", \"scratched paint\", \"faded paint\", \"clean car\", \"dirty car\", \"muddy car\", \"dusty car\", \"wet car\", \"shiny car\", \"detailed car\", \"barn find\", \"junkyard car\", \"restored car\", \"project car\", \"sleeper car\", \"grocery getter\", \"family car\", \"commuter car\", \"work truck\", \"trade vehicle\", \"company car\", \"rental car\", \"stolen vehicle\", \"hot car\", \"marked bills\", \"chop shop\", \"garage\", \"workshop\", \"mechanic\", \"auto shop\", \"dealership\", \"parking lot\", \"street parking\", \"parallel parking\", \"valet\", \"car show\", \"meet up\", \"cruise\", \"convoy\", \"road trip\", \"joyride\", \"test drive\", \"demo car\", \"rental\", \"lease\", \"purchase\", \"sale\", \"trade in\", \"value\", \"depreciation\", \"insurance\", \"registration\", \"title\", \"pink slip\", \"ownership\", \"VIN number\"\n];\n\n// Fisher-Yates shuffle algorithm\nfunction shuffleArray(array) {\n  for (let i = array.length - 1; i > 0; i--) {\n    const j = Math.floor(Math.random() * (i + 1));\n    [array[i], array[j]] = [array[j], array[i]];\n  }\n  return array;\n}\n\n// Get 20 random unique tags\nconst shuffledTags = shuffleArray([...allTags]);\nconst selected = shuffledTags.slice(0, 20);\n\nreturn {\n  json: {\n    randomTags: selected,\n    tagString: selected.join(', '),\n    tagArray: selected\n  }\n};"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -2656,
+        -224
+      ],
+      "id": "cb74788c-1a41-4839-99c3-c2d6b4189f04",
+      "name": "Code in JavaScript2"
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=Generate a viral short description about the {{ $('GAME').item.json.first3Capitalized }} {{ $('GAME NAME').item.json.extractedText }} {{ $('GAME Version').item.json.extractedText }} {{ $('Video TYPE').item.json.lowercaseWords[0] }} {{ $('Video Item').item.json.extractedText }} {{ $('Video Category').item.json.extractedText }}",
+        "messages": {
+          "messageValues": [
+            {
+              "message": "=Generate a viral short description about the  {{ $json.cleaned }}"
+            }
+          ]
+        },
+        "batching": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.chainLlm",
+      "typeVersion": 1.7,
+      "position": [
+        -3008,
+        -224
+      ],
+      "id": "5b059e9a-3a22-4a86-8321-fa54275ea14e",
+      "name": "Basic LLM Chain"
+    },
+    {
+      "parameters": {
+        "model": "deepseek/deepseek-v3.2-speciale",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenRouter",
+      "typeVersion": 1,
+      "position": [
+        -2944,
+        0
+      ],
+      "id": "c44ab1da-8e7a-4a09-95f0-5a30a88040dc",
+      "name": "OpenRouter Chat Model",
+      "credentials": {
+        "openRouterApi": {
+          "id": "OJiRJqLDEJ5H9F8V",
+          "name": "OpenRouter account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "// Get the input string from the previous node\nconst inputString = $('Code in JavaScript1').first().json.cleaned; // Replace 'yourStringField' with your actual field name\n\n// Check if input exists and is a string\nif (typeof inputString !== 'string') {\n  // Return an error message if input is invalid\n  return [{ json: { error: 'Input string is undefined or not a string', extractedText: '' } }];\n}\n\n// Define your delimiters\nconst startChar = '@'; // Start delimiter\nconst endChar = '@';   // End delimiter\n\n// Find the positions of the delimiters\nconst startIndex = inputString.indexOf(startChar);\nconst endIndex = inputString.indexOf(endChar, startIndex + 1);\n\n// Extract text if both delimiters are found\nlet extractedText = '';\nif (startIndex !== -1 && endIndex !== -1 && endIndex > startIndex) {\n  extractedText = inputString.substring(startIndex + 1, endIndex);\n}\n\n// Return the result\nreturn [{ json: { extractedText } }];"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -5248,
+        -224
+      ],
+      "id": "e7292cfa-9a9d-4370-a09b-224020f6d2fd",
+      "name": "GAME NAME"
+    },
+    {
+      "parameters": {
+        "jsCode": "// Get the input string from the previous node\nconst inputString = $('Code in JavaScript1').first().json.cleaned; // Replace 'yourStringField' with your actual field name\n\n// Check if input exists and is a string\nif (typeof inputString !== 'string') {\n  // Return an error message if input is invalid\n  return [{ json: { error: 'Input string is undefined or not a string', extractedText: '' } }];\n}\n\n// Define your delimiters\nconst startChar = '-'; // Start delimiter\nconst endChar = '-';   // End delimiter\n\n// Find the positions of the delimiters\nconst startIndex = inputString.indexOf(startChar);\nconst endIndex = inputString.indexOf(endChar, startIndex + 1);\n\n// Extract text if both delimiters are found\nlet extractedText = '';\nif (startIndex !== -1 && endIndex !== -1 && endIndex > startIndex) {\n  extractedText = inputString.substring(startIndex + 1, endIndex);\n}\n\n// Return the result\nreturn [{ json: { extractedText } }];"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -3232,
+        -224
+      ],
+      "id": "f31bce3c-f2ed-40ce-86f7-5e11e18b8702",
+      "name": "characters"
+    },
+    {
+      "parameters": {
+        "jsCode": "// Get the input string from the previous node\nconst inputString = $('Code in JavaScript1').first().json.cleaned; // Replace 'yourStringField' with your actual field name\n\n// Check if input exists and is a string\nif (typeof inputString !== 'string') {\n  // Return an error message if input is invalid\n  return [{ json: { error: 'Input string is undefined or not a string', extractedText: '' } }];\n}\n\n// Define your delimiters\nconst startChar = ','; // Start delimiter\nconst endChar = ',';   // End delimiter\n\n// Find the positions of the delimiters\nconst startIndex = inputString.indexOf(startChar);\nconst endIndex = inputString.indexOf(endChar, startIndex + 1);\n\n// Extract text if both delimiters are found\nlet extractedText = '';\nif (startIndex !== -1 && endIndex !== -1 && endIndex > startIndex) {\n  extractedText = inputString.substring(startIndex + 1, endIndex);\n}\n\n// Return the result\nreturn [{ json: { extractedText } }];"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -3680,
+        -224
+      ],
+      "id": "7bc0a9e0-c719-4269-9348-bdd8d32ad523",
+      "name": "link"
+    },
+    {
+      "parameters": {
+        "jsCode": "// Get the input string from the previous node\nconst inputString = $('Code in JavaScript1').first().json.cleaned; // Replace 'yourStringField' with your actual field name\n\n// Check if input exists and is a string\nif (typeof inputString !== 'string') {\n  // Return an error message if input is invalid\n  return [{ json: { error: 'Input string is undefined or not a string', extractedText: '' } }];\n}\n\n// Define your delimiters\nconst startChar = '_'; // Start delimiter\nconst endChar = '_';   // End delimiter\n\n// Find the positions of the delimiters\nconst startIndex = inputString.indexOf(startChar);\nconst endIndex = inputString.indexOf(endChar, startIndex + 1);\n\n// Extract text if both delimiters are found\nlet extractedText = '';\nif (startIndex !== -1 && endIndex !== -1 && endIndex > startIndex) {\n  extractedText = inputString.substring(startIndex + 1, endIndex);\n}\n\n// Return the result\nreturn [{ json: { extractedText } }];"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -3456,
+        -224
+      ],
+      "id": "58d02694-5f47-4653-b5f4-090e4aa97fb5",
+      "name": "Video Location"
+    },
+    {
+      "parameters": {
+        "jsCode": "// Get the input string from the previous node\nconst inputString = $('Code in JavaScript1').first().json.cleaned; // Replace 'yourStringField' with your actual field name\n\n// Check if input exists and is a string\nif (typeof inputString !== 'string') {\n  // Return an error message if input is invalid\n  return [{ json: { error: 'Input string is undefined or not a string', extractedText: '' } }];\n}\n\n// Define your delimiters\nconst startChar = '('; // Start delimiter\nconst endChar = ')';   // End delimiter\n\n// Find the positions of the delimiters\nconst startIndex = inputString.indexOf(startChar);\nconst endIndex = inputString.indexOf(endChar, startIndex + 1);\n\n// Extract text if both delimiters are found\nlet extractedText = '';\nif (startIndex !== -1 && endIndex !== -1 && endIndex > startIndex) {\n  extractedText = inputString.substring(startIndex + 1, endIndex);\n}\n\n// Return the result\nreturn [{ json: { extractedText } }];"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -4128,
+        -224
+      ],
+      "id": "dfe08065-b5c8-49a1-b33f-5e4d21d14274",
+      "name": "Video Category"
+    },
+    {
+      "parameters": {
+        "jsCode": "// Get the input string from the previous node\nconst inputString = $('Code in JavaScript1').first().json.cleaned; // Replace 'yourStringField' with your actual field name\n\n// Check if input exists and is a string\nif (typeof inputString !== 'string') {\n  // Return an error message if input is invalid\n  return [{ json: { error: 'Input string is undefined or not a string', extractedText: '' } }];\n}\n\n// Define your delimiters\nconst startChar = '!'; // Start delimiter\nconst endChar = '!';   // End delimiter\n\n// Find the positions of the delimiters\nconst startIndex = inputString.indexOf(startChar);\nconst endIndex = inputString.indexOf(endChar, startIndex + 1);\n\n// Extract text if both delimiters are found\nlet extractedText = '';\nif (startIndex !== -1 && endIndex !== -1 && endIndex > startIndex) {\n  extractedText = inputString.substring(startIndex + 1, endIndex);\n}\n\n// Return the result\nreturn [{ json: { extractedText } }];"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -4352,
+        -224
+      ],
+      "id": "52debe42-2a05-420c-9860-13abb06e74e7",
+      "name": "Video View"
+    },
+    {
+      "parameters": {
+        "jsCode": "// Get the input string from the previous node\nconst inputString = $('Code in JavaScript1').first().json.cleaned; // Replace 'yourStringField' with your actual field name\n\n// Check if input exists and is a string\nif (typeof inputString !== 'string') {\n  // Return an error message if input is invalid\n  return [{ json: { error: 'Input string is undefined or not a string', extractedText: '' } }];\n}\n\n// Define your delimiters\nconst startChar = '%'; // Start delimiter\nconst endChar = '%';   // End delimiter\n\n// Find the positions of the delimiters\nconst startIndex = inputString.indexOf(startChar);\nconst endIndex = inputString.indexOf(endChar, startIndex + 1);\n\n// Extract text if both delimiters are found\nlet extractedText = '';\nif (startIndex !== -1 && endIndex !== -1 && endIndex > startIndex) {\n  extractedText = inputString.substring(startIndex + 1, endIndex);\n}\n\n// Return the result\nreturn [{ json: { extractedText } }];"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -4576,
+        -224
+      ],
+      "id": "436645bf-eabc-4d39-be06-728cbf3c5542",
+      "name": "Video Item"
+    },
+    {
+      "parameters": {
+        "jsCode": "// Get the input string from the previous node\nconst inputString = $('Code in JavaScript1').first().json.cleaned; // Replace 'yourStringField' with your actual field name\n\n// Check if input exists and is a string\nif (typeof inputString !== 'string') {\n  // Return an error message if input is invalid\n  return [{ json: { error: 'Input string is undefined or not a string', extractedText: '' } }];\n}\n\n// Define your delimiters\nconst startChar = '#'; // Start delimiter\nconst endChar = '#';   // End delimiter\n\n// Find the positions of the delimiters\nconst startIndex = inputString.indexOf(startChar);\nconst endIndex = inputString.indexOf(endChar, startIndex + 1);\n\n// Extract text if both delimiters are found\nlet extractedText = '';\nif (startIndex !== -1 && endIndex !== -1 && endIndex > startIndex) {\n  extractedText = inputString.substring(startIndex + 1, endIndex);\n}\n\n// Return the result\nreturn [{ json: { extractedText } }];"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -5024,
+        -224
+      ],
+      "id": "2096b76c-7f8f-493e-a377-26d2fe5d8587",
+      "name": "GAME Version"
+    },
+    {
+      "parameters": {
+        "jsCode": "// Get the input string from the previous node\nconst inputString = $('Code in JavaScript1').first().json.cleaned;\n\n// Define delimiter pairs\nconst delimiters = [\n   { start: '@', end: '@' },\n  { start: '#', end: '#' },\n  { start: '%', end: '%' },\n  { start: '!', end: '!' },\n  { start: '(', end: ')' },\n  { start: ',', end: ',' },  // Added missing comma\n  { start: '.', end: '.' },  // Added missing comma\n  { start: '_', end: '_' },  // Added missing comma\n  { start: '-', end: '-' }\n];\n\n// Check if input exists and is a string\nif (typeof inputString !== 'string') {\n  return [{\n    json: { error: 'Input string is undefined or not a string', lowercaseWords: [] }\n  }];\n}\n\n// Remove text inside delimiters\nlet cleaned = inputString;\n\nfor (const { start, end } of delimiters) {\n  const regex = new RegExp(`\\\\${start}[^${end}]*\\\\${end}`, 'g');\n  cleaned = cleaned.replace(regex, ' ');\n}\n\n// Normalize spaces\ncleaned = cleaned.replace(/\\s+/g, ' ').trim();\n\n// Match words that begin with a lowercase letter\nconst matches = cleaned.match(/\\b[a-z][a-zA-Z']*\\b/g) || [];\n\n// Return ALL matching words\nreturn [{\n  json: {\n    lowercaseWords: matches\n  }\n}];"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -4800,
+        -224
+      ],
+      "id": "e6ff1c90-8ab2-43c9-abc4-d3f4099fc428",
+      "name": "Video TYPE"
+    },
+    {
+      "parameters": {
+        "jsCode": "// Get the input string from the previous node\nconst inputString = $('Code in JavaScript1').first().json.cleaned;\n\n// Define delimiter pairs\nconst delimiters = [\n  { start: '@', end: '@' },\n  { start: '#', end: '#' },\n  { start: '%', end: '%' },\n  { start: '!', end: '!' },\n  { start: '(', end: ')' },\n  { start: ',', end: ',' },  // Added missing comma\n  { start: '.', end: '.' },  // Added missing comma\n  { start: '_', end: '_' },  // Added missing comma\n  { start: '-', end: '-' }\n];\n\n// Check if input exists and is a string\nif (typeof inputString !== 'string') {\n  return [{\n    json: { error: 'Input string is undefined or not a string', first3Capitalized: '' }\n  }];\n}\n\n// Remove text inside delimiters\nlet cleaned = inputString;\nfor (const { start, end } of delimiters) {\n  const regex = new RegExp(`\\\\${start}[^${end}]*\\\\${end}`, 'g');  // Fixed: parentheses instead of backticks\n  cleaned = cleaned.replace(regex, '');\n}\n\n// Regex: match words starting with a capital letter\nconst matches = cleaned.match(/\\b[A-Z][a-zA-Z']*\\b/g);\n\n// Get the first 3 capitalized words\nconst first3 = matches ? matches.slice(0, 3).join(' ') : '';\n\n// Return result\nreturn [{\n  json: { first3Capitalized: first3 }\n}];"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -5472,
+        -224
+      ],
+      "id": "886567da-7599-4d5a-9279-bad30f641749",
+      "name": "GAME"
+    },
+    {
+      "parameters": {
+        "jsCode": "// Get the input string from the previous node\nconst inputString = $('Code in JavaScript1').first().json.cleaned; // Replace 'yourStringField' with your actual field name\n\n// Check if input exists and is a string\nif (typeof inputString !== 'string') {\n  // Return an error message if input is invalid\n  return [{ json: { error: 'Input string is undefined or not a string', extractedText: '' } }];\n}\n\n// Define your delimiters\nconst startChar = '.'; // Start delimiter\nconst endChar = '.';   // End delimiter\n\n// Find the positions of the delimiters\nconst startIndex = inputString.indexOf(startChar);\nconst endIndex = inputString.indexOf(endChar, startIndex + 1);\n\n// Extract text if both delimiters are found\nlet extractedText = '';\nif (startIndex !== -1 && endIndex !== -1 && endIndex > startIndex) {\n  extractedText = inputString.substring(startIndex + 1, endIndex);\n}\n\n// Return the result\nreturn [{ json: { extractedText } }];"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -3904,
+        -224
+      ],
+      "id": "b56f2301-73f1-4fdf-913e-b2b1e95d5331",
+      "name": "Video Category2"
+    },
+    {
+      "parameters": {
+        "jsCode": "const input = $input.first().json.cleaned;\n\nconst result = input.replace(/[%()]/g, (match) => {\n  switch(match) {\n    case '%': return '/';\n    case '(': return '?';\n    case ')': return '?';\n    default: return match;\n  }\n});\n\nreturn { result };"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -5696,
+        -224
+      ],
+      "id": "2c3aa6b8-d634-4c59-9c9b-a905dff08ab8",
+      "name": "Code in JavaScript3"
+    },
+    {
+      "parameters": {
+        "command": "=ffmpeg -ss 00:02:00 -to 00:04:00 -i \"{{ $('Code in JavaScript').item.json.path }}\" \\\n-vf \"crop=ih*9/16:ih,scale=1080:1920,drawtext=\ntext='GTA {{ $('GAME NAME').item.json.extractedText }} {{ $('Video TYPE').item.json.lowercaseWords[0] }} {{ $('Video Item').item.json.extractedText }}':\nfont='DejaVuSans-Bold':\nfontsize=52:\nfontcolor=#ffffff:\nborderw=16:\nbordercolor=black:\nx='(w-tw)/2':\ny='h*0.15':\nalpha='if(lt(t,10),0,\n    if(lt(t,10.8),(t-10)/0.8,\n        if(lt(t,15),1,\n            if(lt(t,15.8),1-(t-15)/0.8,\n                0\n            )\n        )\n    )\n)'\" \\\n-c:a copy \"/home/node/{{ $('GAME').item.json.first3Capitalized }} {{ $('GAME NAME').item.json.extractedText }} {{ $('GAME Version').item.json.extractedText }} {{ $('Video TYPE').item.json.lowercaseWords[0] }} {{ $('Video Item').item.json.extractedText }}.mp4\""
+      },
+      "type": "n8n-nodes-base.executeCommand",
+      "typeVersion": 1,
+      "position": [
+        -192,
+        -128
+      ],
+      "id": "9136abc3-85d2-410d-a55a-201bdf24add9",
+      "name": "Execute Command"
+    },
+    {
+      "parameters": {
+        "command": "=ffmpeg -sseof -0.1 -i \"{{ $('Code in JavaScript').item.json.path }}\" -frames:v 1 \"/home/node/{{ $('GAME').item.json.first3Capitalized }} {{ $('GAME NAME').item.json.extractedText }} {{ $('GAME Version').item.json.extractedText }} {{ $('Video TYPE').item.json.lowercaseWords[0] }} {{ $('Video Item').item.json.extractedText }}_last_frame.jpg\""
+      },
+      "type": "n8n-nodes-base.executeCommand",
+      "typeVersion": 1,
+      "position": [
+        -1536,
+        -224
+      ],
+      "id": "5af912b3-3a64-40f3-9d49-c0c789bbac7e",
+      "name": "Execute Command1"
+    },
+    {
+      "parameters": {
+        "fileSelector": "=/home/node/{{ $('GAME').item.json.first3Capitalized }} {{ $('GAME NAME').item.json.extractedText }} {{ $('GAME Version').item.json.extractedText }} {{ $('Video TYPE').item.json.lowercaseWords[0] }} {{ $('Video Item').item.json.extractedText }}_last_frame.jpg",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.readWriteFile",
+      "typeVersion": 1,
+      "position": [
+        -1312,
+        -224
+      ],
+      "id": "b4ec3fd8-62fa-4f55-b9e3-aaab51fcbe60",
+      "name": "Read/Write Files from Disk3"
+    },
+    {
+      "parameters": {
+        "operation": "text",
+        "text": "={{ $('Video TYPE').item.json.lowercaseWords[0] }} {{ $('Video Item').item.json.extractedText }}",
+        "fontSize": 90,
+        "fontColor": "#FFFFFF",
+        "positionX": 670,
+        "positionY": 990,
+        "lineLength": 25,
+        "options": {
+          "fileName": "image",
+          "font": "/usr/share/fonts/truetype/msttcorefonts/Impact.ttf"
+        }
+      },
+      "type": "n8n-nodes-base.editImage",
+      "typeVersion": 1,
+      "position": [
+        -1088,
+        -224
+      ],
+      "id": "1950d24f-aa88-4372-ad01-b4771dae09d7",
+      "name": "Edit Image"
+    },
+    {
+      "parameters": {
+        "operation": "download",
+        "fileId": {
+          "__rl": true,
+          "value": "1s15EyLkTzkGicvx0a1uwQwrN7oCYyiyD",
+          "mode": "list",
+          "cachedResultName": "gtasalogotrans.png",
+          "cachedResultUrl": "https://drive.google.com/file/d/1s15EyLkTzkGicvx0a1uwQwrN7oCYyiyD/view?usp=drivesdk"
+        },
+        "options": {
+          "binaryPropertyName": "overlay",
+          "fileName": "overlay"
+        }
+      },
+      "type": "n8n-nodes-base.googleDrive",
+      "typeVersion": 3,
+      "position": [
+        -864,
+        -224
+      ],
+      "id": "c90cecbe-4a5b-42d7-912c-386c596a34cf",
+      "name": "Download file",
+      "credentials": {
+        "googleDriveOAuth2Api": {
+          "id": "GgEMRuth3DorJHan",
+          "name": "Google Drive account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "composite",
+        "dataPropertyNameComposite": "overlay",
+        "positionX": 20,
+        "positionY": 650,
+        "options": {}
+      },
+      "type": "n8n-nodes-base.editImage",
+      "typeVersion": 1,
+      "position": [
+        -640,
+        -224
+      ],
+      "id": "8b50b624-9c09-4c83-869f-dc05b879f67d",
+      "name": "Edit Image1"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "=https://www.googleapis.com/upload/youtube/v3/thumbnails/set?videoId={{ $('Upload a video1').item.json.uploadId }}&uploadType=media ",
+        "authentication": "predefinedCredentialType",
+        "nodeCredentialType": "youTubeOAuth2Api",
+        "sendQuery": true,
+        "queryParameters": {
+          "parameters": [
+            {
+              "name": "YouTube Upload",
+              "value": "n8n-nodes-base.httpRequest"
+            }
+          ]
+        },
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Content-Type",
+              "value": "={{ $json.mimeType }}"
+            }
+          ]
+        },
+        "sendBody": true,
+        "contentType": "binaryData",
+        "inputDataFieldName": "=data",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        -416,
+        -128
+      ],
+      "id": "0cddf888-bae5-483a-ace2-c5f42f811c1f",
+      "name": "HTTP Request4",
+      "alwaysOutputData": false,
+      "executeOnce": false,
+      "credentials": {
+        "youTubeOAuth2Api": {
+          "id": "gzZdf4HRsBCVgwSY",
+          "name": "Real Local Testing Supz"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "fileSelector": "={{ $('Code in JavaScript').item.json.path }}",
+        "options": {
+          "mimeType": "video/mp4"
+        }
+      },
+      "type": "n8n-nodes-base.readWriteFile",
+      "typeVersion": 1,
+      "position": [
+        -1984,
+        -224
+      ],
+      "id": "acb656bf-daa5-4944-b935-8a651d974017",
+      "name": "Read/Write Files from Disk4"
+    },
+    {
+      "parameters": {
+        "resource": "video",
+        "operation": "upload",
+        "title": "={{ $('GAME').item.json.first3Capitalized }} {{ $('GAME NAME').item.json.extractedText }} {{ $('GAME Version').item.json.extractedText }} {{ $('Video TYPE').item.json.lowercaseWords[0] }} {{ $('Video Item').item.json.extractedText }}",
+        "regionCode": "ZA",
+        "categoryId": "20",
+        "options": {
+          "defaultLanguage": "en",
+          "description": "={{ $('Basic LLM Chain').item.json.text }}\n\n{{ $('Code in JavaScript3').item.json.result }}\n\n",
+          "embeddable": true,
+          "license": "youtube",
+          "privacyStatus": "public",
+          "publicStatsViewable": false,
+          "recordingDate": "={{ $now }}",
+          "selfDeclaredMadeForKids": false,
+          "tags": "={{ $('Code in JavaScript2').item.json.tagString }}, {{ $('GAME').item.json.first3Capitalized }}, {{ $('GAME NAME').item.json.extractedText }}, {{ $('GAME Version').item.json.extractedText }}, {{ $('Video TYPE').item.json.lowercaseWords[0] }}, {{ $('Video Item').item.json.extractedText }}"
+        }
+      },
+      "type": "n8n-nodes-base.youTube",
+      "typeVersion": 1,
+      "position": [
+        -1760,
+        -224
+      ],
+      "id": "7a65bf91-67e6-4787-b5f5-b686bce3fdbc",
+      "name": "Upload a video2",
+      "credentials": {
+        "youTubeOAuth2Api": {
+          "id": "Y2yhkK0G0xPfohiz",
+          "name": "UnrealG Backup"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "fileSelector": "=/home/node/{{ $('GAME').item.json.first3Capitalized }} {{ $('GAME NAME').item.json.extractedText }} {{ $('GAME Version').item.json.extractedText }} {{ $('Video TYPE').item.json.lowercaseWords[0] }} {{ $('Video Item').item.json.extractedText }}.mp4",
+        "options": {
+          "mimeType": "video/mp4"
+        }
+      },
+      "type": "n8n-nodes-base.readWriteFile",
+      "typeVersion": 1,
+      "position": [
+        704,
+        -128
+      ],
+      "id": "4960a780-8b2a-4439-b352-39cf58d99953",
+      "name": "Read/Write Files from Disk5",
+      "alwaysOutputData": true
+    },
+    {
+      "parameters": {
+        "resource": "video",
+        "operation": "upload",
+        "title": "={{ $('GAME').item.json.first3Capitalized }} {{ $('GAME NAME').item.json.extractedText }} {{ $('GAME Version').item.json.extractedText }} {{ $('Video TYPE').item.json.lowercaseWords[0] }} {{ $('Video Item').item.json.extractedText }}",
+        "regionCode": "ZA",
+        "categoryId": "20",
+        "options": {
+          "defaultLanguage": "en",
+          "description": "={{ $('Basic LLM Chain').item.json.text }}",
+          "embeddable": true,
+          "license": "creativeCommon",
+          "privacyStatus": "public",
+          "publicStatsViewable": false,
+          "recordingDate": "={{ $now }}",
+          "selfDeclaredMadeForKids": false,
+          "tags": "={{ $('Code in JavaScript2').item.json.tagString }}, {{ $('GAME').item.json.first3Capitalized }}, {{ $('GAME NAME').item.json.extractedText }}, {{ $('GAME Version').item.json.extractedText }}, {{ $('Video TYPE').item.json.lowercaseWords[0] }}, {{ $('Video Item').item.json.extractedText }}"
+        }
+      },
+      "type": "n8n-nodes-base.youTube",
+      "typeVersion": 1,
+      "position": [
+        928,
+        -128
+      ],
+      "id": "367e2d8f-bf23-4fe5-90c4-e252fafcc2e5",
+      "name": "Upload a video3",
+      "credentials": {
+        "youTubeOAuth2Api": {
+          "id": "Y2yhkK0G0xPfohiz",
+          "name": "UnrealG Backup"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "fileSelector": "=/home/node/{{ $('GAME').item.json.first3Capitalized }} {{ $('GAME NAME').item.json.extractedText }} {{ $('GAME Version').item.json.extractedText }} {{ $('Video TYPE').item.json.lowercaseWords[0] }} {{ $('Video Item').item.json.extractedText }}.mp4",
+        "options": {
+          "mimeType": "video/mp4"
+        }
+      },
+      "type": "n8n-nodes-base.readWriteFile",
+      "typeVersion": 1,
+      "position": [
+        2048,
+        -128
+      ],
+      "id": "6e82fd67-26c9-4965-b358-b995614f6cc8",
+      "name": "Read/Write Files from Disk6",
+      "alwaysOutputData": true
+    },
+    {
+      "parameters": {
+        "postSettings": {
+          "text": "={{ $('GAME').item.json.first3Capitalized }} {{ $('GAME NAME').item.json.extractedText }} {{ $('GAME Version').item.json.extractedText }} {{ $('Video TYPE').item.json.lowercaseWords[0] }} {{ $('Video Item').item.json.extractedText }}\n\n\n{{ $('Basic LLM Chain').item.json.text }}\n",
+          "visibilityType": 0,
+          "allowComment": 1,
+          "scheduleTime": 0
+        }
+      },
+      "type": "n8n-nodes-social-tiktok.tikTokUpload",
+      "typeVersion": 1,
+      "position": [
+        2272,
+        -128
+      ],
+      "id": "ab741937-d5dc-46a3-bb04-a956869a0240",
+      "name": "TikTok Upload1",
+      "credentials": {
+        "tiktokApi": {
+          "id": "zP8WEciSM0ftprcV",
+          "name": "UnrealG Backup"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "command": "=ffmpeg -ss 00:00:00 -to 00:02:00 -i \"{{ $('Code in JavaScript').item.json.path }}\" \\\n-vf \"crop=ih*9/16:ih,scale=1080:1920,drawtext=\ntext='GTA {{ $('GAME NAME').item.json.extractedText }} {{ $('Video TYPE').item.json.lowercaseWords[0] }} {{ $('Video Item').item.json.extractedText }}':\nfont='DejaVuSans-Bold':\nfontsize=52:\nfontcolor=#C2494F:\nborderw=16:\nbordercolor=blue:\nx='(w-tw)/2':\ny='h*0.15':\nalpha='if(lt(t,10),0,\n    if(lt(t,10.8),(t-10)/0.8,\n        if(lt(t,15),1,\n            if(lt(t,15.8),1-(t-15)/0.8,\n                0\n            )\n        )\n    )\n)'\" \\\n-c:a copy \"/home/node/{{ $('GAME').item.json.first3Capitalized }} {{ $('GAME NAME').item.json.extractedText }} {{ $('GAME Version').item.json.extractedText }} {{ $('Video TYPE').item.json.lowercaseWords[0] }} {{ $('Video Item').item.json.extractedText }}_2.mp4\""
+      },
+      "type": "n8n-nodes-base.executeCommand",
+      "typeVersion": 1,
+      "position": [
+        32,
+        -128
+      ],
+      "id": "d38c515e-f099-46d6-a1c3-0a28245cc58d",
+      "name": "Execute Command2"
+    },
+    {
+      "parameters": {
+        "fileSelector": "=/home/node/{{ $('GAME').item.json.first3Capitalized }} {{ $('GAME NAME').item.json.extractedText }} {{ $('GAME Version').item.json.extractedText }} {{ $('Video TYPE').item.json.lowercaseWords[0] }} {{ $('Video Item').item.json.extractedText }}_2.mp4",
+        "options": {
+          "mimeType": "video/mp4"
+        }
+      },
+      "type": "n8n-nodes-base.readWriteFile",
+      "typeVersion": 1,
+      "position": [
+        1152,
+        -128
+      ],
+      "id": "f098b88e-0c8a-4a70-aedd-82926a9125a3",
+      "name": "Read/Write Files from Disk7",
+      "alwaysOutputData": true
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "=https://www.googleapis.com/upload/youtube/v3/thumbnails/set?videoId={{ $('Upload a video2').item.json.uploadId }}&uploadType=media ",
+        "authentication": "predefinedCredentialType",
+        "nodeCredentialType": "youTubeOAuth2Api",
+        "sendQuery": true,
+        "queryParameters": {
+          "parameters": [
+            {
+              "name": "YouTube Upload",
+              "value": "n8n-nodes-base.httpRequest"
+            }
+          ]
+        },
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Content-Type",
+              "value": "={{ $json.mimeType }}"
+            }
+          ]
+        },
+        "sendBody": true,
+        "contentType": "binaryData",
+        "inputDataFieldName": "=data",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        -416,
+        -320
+      ],
+      "id": "42961fd6-4e99-4de0-88da-316eb71d8f25",
+      "name": "HTTP Request",
+      "alwaysOutputData": false,
+      "executeOnce": false,
+      "credentials": {
+        "youTubeOAuth2Api": {
+          "id": "Y2yhkK0G0xPfohiz",
+          "name": "UnrealG Backup"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "resource": "video",
+        "operation": "upload",
+        "title": "={{ $('GAME').item.json.first3Capitalized }} {{ $('GAME NAME').item.json.extractedText }} {{ $('GAME Version').item.json.extractedText }} {{ $('Video TYPE').item.json.lowercaseWords[0] }} {{ $('Video Item').item.json.extractedText }}",
+        "regionCode": "ZA",
+        "categoryId": "20",
+        "options": {
+          "defaultLanguage": "en",
+          "description": "={{ $('Basic LLM Chain').item.json.text }}",
+          "embeddable": true,
+          "license": "creativeCommon",
+          "privacyStatus": "public",
+          "publicStatsViewable": false,
+          "recordingDate": "={{ $now }}",
+          "selfDeclaredMadeForKids": false,
+          "tags": "={{ $('Code in JavaScript2').item.json.tagString }}, {{ $('GAME').item.json.first3Capitalized }}, {{ $('GAME NAME').item.json.extractedText }}, {{ $('GAME Version').item.json.extractedText }}, {{ $('Video TYPE').item.json.lowercaseWords[0] }}, {{ $('Video Item').item.json.extractedText }}"
+        }
+      },
+      "type": "n8n-nodes-base.youTube",
+      "typeVersion": 1,
+      "position": [
+        1392,
+        -128
+      ],
+      "id": "ccb3ab55-e998-4f28-8173-ebb28f214d89",
+      "name": "Upload a video5",
+      "credentials": {
+        "youTubeOAuth2Api": {
+          "id": "7SMECJgWq8gMlcrS",
+          "name": "Vehicles"
+        }
+      }
+    }
+  ],
+  "connections": {
+    "Code in JavaScript": {
+      "main": [
+        [
+          {
+            "node": "Code in JavaScript1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Local File Trigger": {
+      "main": [
+        [
+          {
+            "node": "Code in JavaScript",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Read/Write Files from Disk1": {
+      "main": [
+        [
+          {
+            "node": "TikTok Upload",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "TikTok Upload": {
+      "main": [
+        [
+          {
+            "node": "Read/Write Files from Disk6",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code in JavaScript1": {
+      "main": [
+        [
+          {
+            "node": "Code in JavaScript3",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Read/Write Files from Disk": {
+      "main": [
+        [
+          {
+            "node": "Upload a video",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Upload a video": {
+      "main": [
+        [
+          {
+            "node": "Read/Write Files from Disk5",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Read/Write Files from Disk2": {
+      "main": [
+        [
+          {
+            "node": "Upload a video1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Upload a video1": {
+      "main": [
+        [
+          {
+            "node": "Read/Write Files from Disk4",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code in JavaScript2": {
+      "main": [
+        [
+          {
+            "node": "Read/Write Files from Disk2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Basic LLM Chain": {
+      "main": [
+        [
+          {
+            "node": "Code in JavaScript2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "OpenRouter Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Basic LLM Chain",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "GAME NAME": {
+      "main": [
+        [
+          {
+            "node": "GAME Version",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "characters": {
+      "main": [
+        [
+          {
+            "node": "Basic LLM Chain",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "link": {
+      "main": [
+        [
+          {
+            "node": "Video Location",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Video Location": {
+      "main": [
+        [
+          {
+            "node": "characters",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Video Category": {
+      "main": [
+        [
+          {
+            "node": "Video Category2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Video View": {
+      "main": [
+        [
+          {
+            "node": "Video Category",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Video Item": {
+      "main": [
+        [
+          {
+            "node": "Video View",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "GAME Version": {
+      "main": [
+        [
+          {
+            "node": "Video TYPE",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Video TYPE": {
+      "main": [
+        [
+          {
+            "node": "Video Item",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "GAME": {
+      "main": [
+        [
+          {
+            "node": "GAME NAME",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Video Category2": {
+      "main": [
+        [
+          {
+            "node": "link",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code in JavaScript3": {
+      "main": [
+        [
+          {
+            "node": "GAME",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Execute Command": {
+      "main": [
+        [
+          {
+            "node": "Execute Command2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Execute Command1": {
+      "main": [
+        [
+          {
+            "node": "Read/Write Files from Disk3",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Read/Write Files from Disk3": {
+      "main": [
+        [
+          {
+            "node": "Edit Image",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Edit Image": {
+      "main": [
+        [
+          {
+            "node": "Download file",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Download file": {
+      "main": [
+        [
+          {
+            "node": "Edit Image1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Edit Image1": {
+      "main": [
+        [
+          {
+            "node": "HTTP Request4",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "HTTP Request",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "HTTP Request4": {
+      "main": [
+        [
+          {
+            "node": "Execute Command",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Read/Write Files from Disk4": {
+      "main": [
+        [
+          {
+            "node": "Upload a video2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Upload a video2": {
+      "main": [
+        [
+          {
+            "node": "Execute Command1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Read/Write Files from Disk5": {
+      "main": [
+        [
+          {
+            "node": "Upload a video3",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Upload a video3": {
+      "main": [
+        [
+          {
+            "node": "Read/Write Files from Disk7",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Read/Write Files from Disk6": {
+      "main": [
+        [
+          {
+            "node": "TikTok Upload1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Execute Command2": {
+      "main": [
+        [
+          {
+            "node": "Read/Write Files from Disk",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Read/Write Files from Disk7": {
+      "main": [
+        [
+          {
+            "node": "Upload a video5",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Upload a video5": {
+      "main": [
+        [
+          {
+            "node": "Read/Write Files from Disk1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "pinData": {},
+  "meta": {
+    "instanceId": "0352967a29f90454cfe75054fad2f84efca56fe19649c4afcb15e241aa45857a"
+  }
+}
